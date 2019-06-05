@@ -60,6 +60,7 @@ namespace TestGravityField
         public Ellipse center = new Ellipse();
 
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -128,9 +129,11 @@ namespace TestGravityField
             v2.Text = $"v2={p2.v.Len()}";
         }
 
-        void applyF(Particle p, bool f2 = false)
+        double R_field = 50;
+
+        void applyF(Particle p)
         {
-            double timekoeff = 1000;
+            double timekoeff = 100;
             var v = p.v;
             var r = p.r;
 
@@ -140,12 +143,13 @@ namespace TestGravityField
             // движение положительного ядра в электронном облаке 
             var f = r.Minus();
 
-
-            if (f2)
+            var actualR = R;
+            if(R < R_field)
             {
-                // добавляем коэффициент. Движение земли вокруг солнца.
-                f = f.Mult( 5000000 / (R*R*R));
+                actualR = R_field;
             }
+            f = f.Mult( 5000000 / (actualR * actualR * actualR));
+
 
             var vnew = v;
             vnew.x = v.x + f.x / timekoeff;
@@ -164,7 +168,7 @@ namespace TestGravityField
         public void Tick()
         {
             applyF(p1);
-            applyF(p2, true);
+            applyF(p2);
 
 
 
@@ -183,8 +187,15 @@ namespace TestGravityField
             xc = w / 2.0;
             yc = h / 2.0;
 
-            center.Width = 10;
-            center.Height = 10;
+            Ellipse pcenter = new Ellipse();
+            pcenter.Width = 5;
+            pcenter.Height = 5;
+
+            pcenter.Fill = Brushes.Blue;
+            pcenter.Stroke = Brushes.Black;
+
+            center.Width = R_field*2;
+            center.Height = R_field*2;
 
             p1.point.Width = 10;
             p1.point.Height = 10;
@@ -202,22 +213,27 @@ namespace TestGravityField
             p2.point.Stroke = Brushes.Black;
 
             canvas.Children.Add(center);
+            canvas.Children.Add(pcenter);
+            Canvas.SetZIndex(center, -5);
+            Canvas.SetZIndex(pcenter, -4);
+
             canvas.Children.Add(p1.point);
             canvas.Children.Add(p2.point);
 
-            p1.v.x = 200;
-            p1.v.y = 30;
+            p1.v.x = 300;
+            p1.v.y = -30;
 
             p1.r.x = 0;
-            p1.r.y = 100;
+            p1.r.y = 75;
 
-            p2.v.x = 200;
-            p2.v.y = 30;
+            p2.v.x = 100;
+            p2.v.y = 0;
 
             p2.r.x = 0;
-            p2.r.y = 100;
+            p2.r.y = 30;
 
             ToCanvas(center, 0, 0);
+            ToCanvas(pcenter, 0, 0);
 
             PointToCanvas();
 
