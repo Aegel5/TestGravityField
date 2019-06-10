@@ -131,7 +131,7 @@ namespace TestGravityField
 
         double R_field = 50;
 
-        void applyF(Particle p)
+        void ApplyForce(Particle p)
         {
             double timekoeff = 100;
             var v = p.v;
@@ -139,13 +139,13 @@ namespace TestGravityField
 
             double R = r.Len();
 
-            // сила пропорциональна радиусу.
-            // движение положительного ядра в электронном облаке 
+            // сила пропорциональна радиусу но со знаком минус.
             var f = r.Minus();
 
             var actualR = R;
             if(R < R_field)
             {
+                // движение положительного ядра в электронном облаке, коэффициент радиуса - константа.
                 actualR = R_field;
             }
             f = f.Mult( 5000000 / (actualR * actualR * actualR));
@@ -167,8 +167,8 @@ namespace TestGravityField
 
         public void Tick()
         {
-            applyF(p1);
-            applyF(p2);
+            ApplyForce(p1);
+            ApplyForce(p2);
 
 
 
